@@ -1,0 +1,12 @@
+/* Custom styling extracted from original streamlit_app.py */
+.main {
+    padding: 2rem;
+}
+.stMetric {
+    background-color: #f0f2f6;
+    padding: 1rem;
+    border-radius: 0.5rem;
+}
+.health-good { color: #28a745; font-weight: bold; }
+.health-warning { color: #ffc107; font-weight: bold; }
+.health-danger { color: #dc3545; font-weight: bold; }

@@ -46,8 +46,8 @@ button[data-testid="stButton"]:hover {
     background-color: #21867a;
 }
 
-/* Sidebar active navigation item */
-[data-testid="stSidebarNav"] .css-1dp5vir {
+/* Updated sidebar active item */
+[data-testid="stSidebarNav"] button[aria-pressed="true"] {
     background-color: #2A9D8F;
     color: #ffffff;
     border-radius: 0.5rem;

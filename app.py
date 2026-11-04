@@ -29,17 +29,28 @@ if "checkups" not in st.session_state:
 # ---------------------------------------------------------------------------
 # Sidebar navigation
 # ---------------------------------------------------------------------------
+icon_map = {
+    "Home": "🏠",
+    "Health Checkup": "🩺",
+    "Health Dashboard": "📊",
+    "Reports": "📄",
+    "Guidelines": "📚",
+    "Login": "🔐",
+    "Register": "📝",
+}
 if "user_id" not in st.session_state:
     # Show only authentication options
     page = st.sidebar.radio(
         "Navigation",
         ["Login", "Register"],
+        format_func=lambda p: f"{icon_map.get(p, '')}  {p}",
         index=0,
     )
 else:
     page = st.sidebar.radio(
         "Navigation",
         ["Home", "Health Checkup", "Health Dashboard", "Reports", "Guidelines"],
+        format_func=lambda p: f"{icon_map.get(p, '')}  {p}",
     )
 
 # ---------------------------------------------------------------------------

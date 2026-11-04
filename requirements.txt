@@ -4,5 +4,5 @@ numpy==1.24.3
 plotly==5.22.0
 sqlalchemy==2.0.34
 passlib[bcrypt]==1.7.4
-reportlab==3.6.12
+reportlab==5.1.0
 pytest==8.2.2

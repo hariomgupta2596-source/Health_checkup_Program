@@ -1,12 +1,71 @@
-/* Custom styling extracted from original streamlit_app.py */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+
+/* Global typography */
+body {
+    font-family: 'Inter', sans-serif;
+    line-height: 1.5;
+    color: #264653;
+    background-color: #F0F2F6;
+    margin: 0;
+    padding: 0;
+}
+
+/* Main layout padding */
 .main {
     padding: 2rem;
 }
+
+/* Card component */
+.card {
+    background: #ffffff;
+    border-radius: 0.75rem;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Metric styling – using Streamlit default classes */
 .stMetric {
     background-color: #f0f2f6;
     padding: 1rem;
     border-radius: 0.5rem;
 }
-.health-good { color: #28a745; font-weight: bold; }
-.health-warning { color: #ffc107; font-weight: bold; }
-.health-danger { color: #dc3545; font-weight: bold; }
+
+/* Primary button (used for PDF generation, etc.) */
+button[data-testid="stButton"] {
+    background-color: #2A9D8F;
+    color: #ffffff;
+    border: none;
+    border-radius: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+button[data-testid="stButton"]:hover {
+    background-color: #21867a;
+}
+
+/* Sidebar active navigation item */
+[data-testid="stSidebarNav"] .css-1dp5vir {
+    background-color: #2A9D8F;
+    color: #ffffff;
+    border-radius: 0.5rem;
+    font-weight: 600;
+}
+
+/* Toast styling (Streamlit uses built‑in toast, just ensure contrast) */
+[data-testid="stToast"] {
+    background-color: #e9c46a;
+    color: #264653;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .card {
+        padding: 1rem;
+    }
+    .main {
+        padding: 1rem;
+    }
+}

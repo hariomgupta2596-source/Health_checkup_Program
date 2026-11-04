@@ -1,166 +1,110 @@
-# Health Checkup Program
+# 🏥 Health Checkup Program
 
-## Overview
+A full-stack, responsive healthcare monitoring web application designed for modern web deployment.
 
-**Health Checkup Program** is a modern, responsive web application built with **Streamlit** that allows users to:
-- Register and securely log in.
-- Record comprehensive health assessments (vitals, lifestyle, medical history).
-- Store data persistently in a **SQLite** database.
-- View an interactive dashboard with Plotly visualisations (BMI trend, blood pressure history).
-- Generate downloadable PDF health reports (ReportLab).
-- Browse educational health guidelines.
-
-The app is intentionally **educational only** – it does **not** provide medical diagnosis.
+- **Frontend:** Built with **Next.js (React)**, styled with modern CSS Modules, fully optimized for deployment on **Vercel**.
+- **Backend:** High-performance **FastAPI (Python)** REST API with CORS support, persistent **SQLite** database via SQLAlchemy 2.0, secure native **bcrypt** authentication, and **ReportLab** PDF generation.
 
 ---
 
-## Project Structure
+## 🌟 Key Features
+
+- **🔐 Secure Authentication:** User registration and login powered by native bcrypt hashing and clean credential verification.
+- **📋 Health Assessment Form:** Input comprehensive vitals (height, weight, BP, pulse, temp), lifestyle habits (sleep, exercise, hydration with live sliders), and pre-existing medical conditions.
+- **📊 Interactive Dashboard:** Instant metric calculations (BMI category, vitals status) alongside interactive Plotly health trend charts.
+- **💡 Personalized Recommendations:** Rule-based health and lifestyle advisory tailored to assessment metrics.
+- **📄 PDF Reports:** Downloadable, printable health summary reports generated server-side.
+- **📚 Evidence-Based Guidelines:** 5-category health and wellness education covering Nutrition, Exercise, Sleep, Stress, and Disease Prevention.
+
+---
+
+## 📁 Clean Architecture
+
 ```
 Health_checkup_Program/
+├── backend/
+│   ├── main.py              # FastAPI REST endpoints & CORS configuration
+│   └── requirements.txt     # Python backend dependencies
 │
-├─ app.py                     # Entry point – sets up Streamlit config & navigation
-├─ requirements.txt           # Python dependencies
-├─ README.md                  # This file
+├── frontend/                # Next.js Application (Vercel-ready)
+│   ├── components/          # Reusable UI components (Sidebar, Card, Layout)
+│   ├── pages/               # Application routes
+│   │   ├── _app.js          # Global app wrapper
+│   │   ├── index.js         # Landing page with stats & quick actions
+│   │   ├── login.js         # User login
+│   │   ├── register.js      # User registration
+│   │   ├── healthcheck.js   # Assessment questionnaire
+│   │   ├── dashboard.js     # Health dashboard with Plotly charts
+│   │   ├── reports.js       # PDF report generator & downloader
+│   │   └── guidelines.js    # Evidence-based health guidelines
+│   ├── styles/              # CSS Modules & global variables
+│   ├── utils/api.js         # Axios API client configured with auth headers
+│   ├── package.json
+│   └── next.config.js
 │
-├─ assets/
-│   └─ styles.css             # Custom CSS styling
-│
-├─ authentication/
-│   ├─ __init__.py            # Password hashing utilities (passlib bcrypt)
-│   ├─ login.py               # Login page
-│   └─ register.py            # Registration page
-│
-├─ database/
-│   ├─ db_connection.py       # SQLAlchemy engine & session helper
-│   ├─ db_setup.py            # Table definitions & create_all()
-│   └─ init_db.py             # Simple script to initialise the DB
-│
-├─ modules/
-│   ├─ health_checkup.py      # Persist checkup helper
-│   ├─ health_analysis.py     # Rule‑based recommendation engine
-│   └─ bmi_calculator.py      # (placeholder – future calculations)
-│
-├─ pages/
-│   ├─ __init__.py
-│   ├─ home.py                # Landing page
-│   ├─ health_checkup.py      # Form page (writes to DB)
-│   ├─ dashboard.py           # User dashboard with Plotly charts
-│   ├─ reports.py             # PDF report generation & download
-│   └─ guidelines.py          # Static health education content
-│
-├─ utils/
-│   ├─ charts.py              # Data loading + Plotly chart helpers
-│   └─ pdf_generator.py       # ReportLab PDF creation
-│
-└─ tests/
-    ├─ test_auth.py           # Authentication unit tests
-    └─ test_database.py       # DB insert/retrieve tests
+├── database/                # SQLite connection and schema definitions
+├── authentication/          # Secure bcrypt password hashing utilities
+├── modules/                 # Checkup persistence and advisory engine
+├── utils/                   # ReportLab PDF generation utilities
+├── tests/                   # Pytest test suite (auth, database, and API)
+├── requirements.txt         # Root Python requirements
+└── LICENSE
 ```
 
 ---
 
-## Setup & Installation
-1. **Clone the repository** (or place the source folder in your workspace).
-2. **Create a virtual environment** (recommended):
-   ```bash
-   python -m venv venv
-   source venv/Scripts/activate   # on Windows
-   # or: source venv/bin/activate  # on macOS/Linux
-   ```
-3. **Install dependencies**:
-   ```bash
-   pip install -r requirements.txt
-   ```
-4. **Initialise the SQLite database** (creates `health_checkup.db` in the project root):
-   ```bash
-   python -m database.init_db
-   ```
-5. **Run the application**:
-   ```bash
-   streamlit run app.py
-   ```
-   The app will be available at `http://localhost:8501`.
+## 🚀 Getting Started
 
----
-
-## Testing
-The project includes a small test suite using **pytest**.
+### 1. Backend Setup (FastAPI)
 ```bash
-pytest tests
+# Install dependencies
+pip install -r backend/requirements.txt
+
+# Start the API server
+uvicorn backend.main:app --reload --port 8000
 ```
-All tests should pass, confirming that:
-- Password hashing & verification works.
-- Duplicate usernames are rejected.
-- Health checkup records are correctly persisted with condition flags.
+Interactive API documentation will be available at [http://localhost:8000/docs](http://localhost:8000/docs).
 
----
-
-## Docker Deployment (Optional)
-You can containerise the app with the provided `Dockerfile`.
+### 2. Frontend Setup (Next.js)
 ```bash
-# Build the image
-docker build -t health-checkup-program .
+# Navigate to frontend
+cd frontend
 
-# Run the container (exposes Streamlit default port 8501)
-docker run -p 8501:8501 health-checkup-program
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
 ```
-Open `http://localhost:8501` in your browser.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-**Dockerfile**
-```Dockerfile
-# Use an official lightweight Python image
-FROM python:3.11-slim
+---
 
-# Set a non‑root user for security
-RUN useradd --create-home appuser
-WORKDIR /home/appuser
+## ☁️ Deployment
 
-# Copy only the necessary files
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+### Frontend (Vercel)
+1. Push repository to GitHub.
+2. In [Vercel](https://vercel.com/), select **Add New Project** and import this repository.
+3. Set **Root Directory** to `frontend`.
+4. Add environment variable:
+   - `NEXT_PUBLIC_API_URL`: URL of your deployed backend (e.g., `https://your-backend.onrender.com`).
+5. Click **Deploy**.
 
-COPY . .
+### Backend (Render / Railway / Fly.io)
+Deploy as a Python Web Service:
+- **Build Command:** `pip install -r backend/requirements.txt`
+- **Start Command:** `uvicorn backend.main:app --host 0.0.0.0 --port $PORT`
 
-# Change ownership to the non‑root user
-RUN chown -R appuser:appuser .
-USER appuser
+---
 
-# Expose Streamlit default port
-EXPOSE 8501
+## 🧪 Testing
 
-# Run the app
-CMD ["streamlit", "run", "app.py", "--server.port=8501", "--server.enableCORS=false"]
-```
-
-**.dockerignore** (optional, placed in project root):
-```
-__pycache__
-*.pyc
-*.pyo
-*.pyd
-.env
-*.sqlite3
-.idea
-.git
+Run automated tests using pytest:
+```bash
+pytest
 ```
 
 ---
 
-## Configuration & Secrets
-- The SQLite database file (`health_checkup.db`) is created in the project root and holds all user data.
-- Passwords are never stored in plain text – they are hashed with **bcrypt** via Passlib.
-- No external API keys or secrets are required for the core functionality.
-
----
-
-## Future Enhancements
-- Add **BMI calculator** module with age‑adjusted categories for children.
-- Implement **profile editing** (user details, avatar, etc.).
-- Extend **visualisations** (e.g., heart‑rate trends, water intake heatmaps).
-- Add **email verification** and password‑reset flow.
-- Incorporate **role‑based permissions** for admin dashboards.
-
----
-
-## License
-This project is provided under the **MIT License** – feel free to adapt, improve, and share.
+## 📄 License
+MIT License. See [LICENSE](LICENSE) for details.

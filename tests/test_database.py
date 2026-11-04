@@ -6,31 +6,39 @@ from database.db_connection import engine
 from database.db_setup import users, checkups, conditions, create_all
 from modules.health_checkup import save_checkup
 
+
 @pytest.fixture(scope="function", autouse=True)
 def setup_db():
-    # Ensure fresh tables
     create_all()
     yield
-    # Cleanup test data after each test
     with engine.begin() as conn:
         conn.execute(checkups.delete())
         conn.execute(conditions.delete())
         conn.execute(users.delete().where(users.c.username.like("test_user_%")))
+
 
 def _create_test_user():
     username = f"test_user_{datetime.utcnow().timestamp()}"
     email = f"{username}@example.com"
     pwd_hash = get_password_hash("password")
     with engine.begin() as conn:
-        result = conn.execute(users.insert().values(username=username, email=email, password_hash=pwd_hash, created_at=datetime.utcnow()))
+        result = conn.execute(
+            users.insert().values(
+                username=username,
+                email=email,
+                password_hash=pwd_hash,
+                created_at=datetime.utcnow(),
+            )
+        )
         user_id = result.inserted_primary_key[0]
     return user_id
+
 
 def test_save_checkup_and_retrieve():
     user_id = _create_test_user()
     data = {
-        "height_cm": 170,
-        "weight_kg": 70,
+        "height_cm": 170.0,
+        "weight_kg": 70.0,
         "bmi": 24.22,
         "blood_pressure": "120/80",
         "heart_rate": 72,
@@ -49,12 +57,12 @@ def test_save_checkup_and_retrieve():
         "thyroid": False,
     }
     checkup_id = save_checkup(user_id, data)
-    # Verify checkup row exists
+
     with engine.connect() as conn:
-        chk = conn.execute(checkups.select().where(checkups.c.id == checkup_id)).fetchone()
+        chk = conn.execute(checkups.select().where(checkups.c.id == checkup_id)).mappings().fetchone()
         assert chk is not None
         assert chk["bmi"] == data["bmi"]
-        # Verify condition row linked via foreign key
-        cond = conn.execute(conditions.select().where(conditions.c.checkup_id == checkup_id)).fetchone()
+
+        cond = conn.execute(conditions.select().where(conditions.c.checkup_id == checkup_id)).mappings().fetchone()
         assert cond is not None
         assert cond["diabetes"] == data["diabetes"]

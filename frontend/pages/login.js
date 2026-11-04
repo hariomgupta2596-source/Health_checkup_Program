@@ -24,9 +24,13 @@ export default function LoginPage() {
       localStorage.setItem('username', res.data.username);
       router.push('/');
     } catch (err) {
-      setError(
-        err.response?.data?.detail || 'Invalid credentials. Please try again.'
-      );
+      if (err.response?.data?.detail) {
+        setError(err.response.data.detail);
+      } else if (err.message) {
+        setError(`Cannot connect to server: ${err.message}. Please verify NEXT_PUBLIC_API_URL in Vercel.`);
+      } else {
+        setError('Invalid credentials. Please try again.');
+      }
     } finally {
       setLoading(false);
     }

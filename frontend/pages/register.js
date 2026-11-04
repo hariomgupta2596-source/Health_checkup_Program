@@ -42,7 +42,13 @@ export default function RegisterPage() {
       setSuccess('Registration successful! You can now log in.');
       setForm({ username: '', email: '', password: '', confirm_password: '' });
     } catch (err) {
-      setError(err.response?.data?.detail || 'Registration failed. Try a different username or email.');
+      if (err.response?.data?.detail) {
+        setError(err.response.data.detail);
+      } else if (err.message) {
+        setError(`Cannot connect to server: ${err.message}. Please verify NEXT_PUBLIC_API_URL in Vercel.`);
+      } else {
+        setError('Registration failed. Try a different username or email.');
+      }
     } finally {
       setLoading(false);
     }

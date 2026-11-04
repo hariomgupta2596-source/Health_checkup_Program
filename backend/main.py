@@ -17,7 +17,7 @@ from typing import Optional
 from fastapi import FastAPI, Header, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 from database.db_connection import engine
 from database.db_setup import users, checkups, create_all
@@ -31,7 +31,7 @@ create_all()
 app = FastAPI(title="Health Checkup API", version="1.0.0")
 
 # ---------------------------------------------------------------------------
-# CORS – allow all origins (suitable for local dev; restrict in production)
+# CORS – allow all origins for web clients (including Vercel deployment)
 # ---------------------------------------------------------------------------
 app.add_middleware(
     CORSMiddleware,
@@ -80,7 +80,7 @@ class CheckupRequest(BaseModel):
 
 
 # ---------------------------------------------------------------------------
-# Helper: compute BMI and recommendations (mirrors Streamlit logic)
+# Helper: compute BMI and recommendations
 # ---------------------------------------------------------------------------
 
 def _compute_bmi(height_cm: float, weight_kg: float) -> float:
@@ -120,9 +120,24 @@ def _compute_recommendations(
 # Endpoints
 # ---------------------------------------------------------------------------
 
+@app.get("/")
+def health_check():
+    """Health check endpoint."""
+    return {"status": "ok", "message": "Health Checkup API is running"}
+
+
 @app.post("/api/register")
 def register(body: RegisterRequest):
     """Register a new user."""
+    # Check if user already exists
+    sel = users.select().where(
+        (users.c.username == body.username) | (users.c.email == body.email)
+    )
+    with engine.connect() as conn:
+        existing = conn.execute(sel).mappings().fetchone()
+        if existing:
+            raise HTTPException(status_code=400, detail="Username or email is already registered")
+
     password_hash = get_password_hash(body.password)
     ins = users.insert().values(
         username=body.username,
@@ -145,7 +160,7 @@ def login(body: LoginRequest):
         | (users.c.email == body.login_identifier)
     )
     with engine.connect() as conn:
-        row = conn.execute(sel).fetchone()
+        row = conn.execute(sel).mappings().fetchone()
 
     if row is None or not verify_password(body.password, row["password_hash"]):
         raise HTTPException(status_code=401, detail="Invalid credentials")
@@ -217,7 +232,7 @@ def dashboard(x_user_id: Optional[str] = Header(None)):
 
     sel = checkups.select().where(checkups.c.user_id == user_id).order_by(checkups.c.date.desc())
     with engine.connect() as conn:
-        rows = conn.execute(sel).fetchall()
+        rows = conn.execute(sel).mappings().fetchall()
 
     result = []
     for row in rows:
@@ -253,7 +268,7 @@ def reports_latest(x_user_id: Optional[str] = Header(None)):
         .limit(1)
     )
     with engine.connect() as conn:
-        row = conn.execute(sel).fetchone()
+        row = conn.execute(sel).mappings().fetchone()
 
     if row is None:
         raise HTTPException(status_code=404, detail="No checkups found")

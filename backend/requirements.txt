@@ -1,6 +1,6 @@
 fastapi
 uvicorn[standard]
 sqlalchemy
-passlib[bcrypt]
+bcrypt
 reportlab
 python-multipart

@@ -136,8 +136,10 @@ export default function HomePage() {
           {[
             { href: '/healthcheck', label: '🩺 New Checkup' },
             { href: '/dashboard', label: '📊 Dashboard' },
-            { href: '/reports', label: '📄 Reports' },
-            { href: '/guidelines', label: '📚 Guidelines' },
+            { href: '/history', label: '📂 Checkup History' },
+            { href: '/reports', label: '📄 Health Reports' },
+            { href: '/guidelines', label: '📚 Health Guidelines' },
+            { href: '/profile', label: '👤 My Profile' },
           ].map(({ href, label }) => (
             <Link key={href} href={href}>
               <button

@@ -6,8 +6,10 @@ const mainLinks = [
   { href: '/', label: 'Home', icon: '🏠' },
   { href: '/healthcheck', label: 'Health Checkup', icon: '🩺' },
   { href: '/dashboard', label: 'Dashboard', icon: '📊' },
-  { href: '/reports', label: 'Reports', icon: '📄' },
-  { href: '/guidelines', label: 'Guidelines', icon: '📚' },
+  { href: '/history', label: 'Checkup History', icon: '📂' },
+  { href: '/reports', label: 'Health Reports', icon: '📄' },
+  { href: '/guidelines', label: 'Health Guidelines', icon: '📚' },
+  { href: '/profile', label: 'My Profile', icon: '👤' },
 ];
 
 const authLinks = [
@@ -57,6 +59,7 @@ export default function Sidebar({ isLoggedIn, onLogout }) {
               cursor: 'pointer',
               font: 'inherit',
               borderLeft: '3px solid transparent',
+              color: '#dc2626',
             }}
           >
             🚪 Logout

@@ -1,7 +1,5 @@
 """Utility functions for persisting health checkup data.
-
-The `save_checkup` function inserts a new record into the `checkups` table and the
-associated boolean condition flags into the `conditions` table.
+Inserts records into the checkups table and associated boolean conditions.
 """
 from datetime import datetime
 from typing import Dict, Any
@@ -10,20 +8,16 @@ from database.db_connection import engine
 from database.db_setup import checkups, conditions
 
 
-def save_checkup(user_id: int, data: Dict[str, Any]):
-    """Insert a health‑checkup record for the given user.
+def save_checkup(user_id: int, data: Dict[str, Any]) -> int:
+    """Insert a health-checkup record for the given user.
 
     Parameters
     ----------
     user_id: int
         Primary key of the authenticated user.
     data: dict
-        Dictionary containing the fields collected from the form. Expected keys:
-        ``height_cm, weight_kg, bmi, blood_pressure, heart_rate, temperature,
-        sleep_hours, exercise_days, water_intake, smoking, alcohol,
-        stress_level, other_conditions``.
+        Dictionary containing the fields collected from the form.
     """
-    # Insert the main checkup row
     checkup_ins = checkups.insert().values(
         user_id=user_id,
         date=datetime.utcnow(),
@@ -31,6 +25,8 @@ def save_checkup(user_id: int, data: Dict[str, Any]):
         weight_kg=data["weight_kg"],
         bmi=data["bmi"],
         blood_pressure=data.get("blood_pressure"),
+        systolic=data.get("systolic"),
+        diastolic=data.get("diastolic"),
         heart_rate=data.get("heart_rate"),
         temperature=data.get("temperature"),
         sleep_hours=data.get("sleep_hours"),
@@ -39,7 +35,10 @@ def save_checkup(user_id: int, data: Dict[str, Any]):
         smoking=data.get("smoking"),
         alcohol=data.get("alcohol"),
         stress_level=data.get("stress_level"),
-        other_conditions=data.get("other_conditions"),
+        other_conditions=data.get("other_conditions", ""),
+        allergies=data.get("allergies", ""),
+        medications=data.get("medications", ""),
+        family_history=data.get("family_history", ""),
         created_at=datetime.utcnow(),
     )
     with engine.begin() as conn:

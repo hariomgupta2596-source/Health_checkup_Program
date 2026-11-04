@@ -15,7 +15,8 @@ from sqlalchemy import (
     DateTime,
     ForeignKey,
     Text,
-    UniqueConstraint,
+    inspect,
+    text,
 )
 
 # Import engine from db_connection
@@ -37,7 +38,7 @@ users = Table(
 )
 
 # ---------------------------------------------------------------------------
-# User Profiles – optional extra information
+# User Profiles – personal info & preferences
 # ---------------------------------------------------------------------------
 profiles = Table(
     "profiles",
@@ -51,7 +52,7 @@ profiles = Table(
 )
 
 # ---------------------------------------------------------------------------
-# Health Checkups – one per assessment
+# Health Checkups – assessment records
 # ---------------------------------------------------------------------------
 checkups = Table(
     "checkups",
@@ -63,6 +64,8 @@ checkups = Table(
     Column("weight_kg", Float, nullable=False),
     Column("bmi", Float, nullable=False),
     Column("blood_pressure", String),
+    Column("systolic", Integer),
+    Column("diastolic", Integer),
     Column("heart_rate", Integer),
     Column("temperature", Float),
     Column("sleep_hours", Float),
@@ -72,13 +75,14 @@ checkups = Table(
     Column("alcohol", String),
     Column("stress_level", String),
     Column("other_conditions", Text),
+    Column("allergies", Text),
+    Column("medications", Text),
+    Column("family_history", Text),
     Column("created_at", DateTime, default=datetime.utcnow),
 )
 
 # ---------------------------------------------------------------------------
-# Health Conditions – many‑to‑many relationship via a simple JSON‑like column
-# We store boolean flags for common conditions; for extensibility we also keep a
-# free‑text field in the checkups table (other_conditions).
+# Health Conditions – boolean flags for common conditions
 # ---------------------------------------------------------------------------
 conditions = Table(
     "conditions",
@@ -92,9 +96,30 @@ conditions = Table(
     Column("thyroid", Boolean, default=False),
 )
 
+
+def _ensure_columns():
+    """Ensure any recently added columns exist in the SQLite database."""
+    inspector = inspect(engine)
+    if "checkups" in inspector.get_table_names():
+        existing_cols = {col["name"] for col in inspector.get_columns("checkups")}
+        cols_to_add = [
+            ("systolic", "INTEGER"),
+            ("diastolic", "INTEGER"),
+            ("allergies", "TEXT"),
+            ("medications", "TEXT"),
+            ("family_history", "TEXT"),
+        ]
+        with engine.begin() as conn:
+            for col_name, col_type in cols_to_add:
+                if col_name not in existing_cols:
+                    conn.execute(text(f"ALTER TABLE checkups ADD COLUMN {col_name} {col_type}"))
+
+
 def create_all():
-    """Create all tables if they do not already exist."""
+    """Create all tables if they do not already exist and migrate columns."""
     metadata.create_all(bind=engine)
+    _ensure_columns()
+
 
 if __name__ == "__main__":
     create_all()
